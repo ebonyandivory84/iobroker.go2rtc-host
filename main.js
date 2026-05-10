@@ -5,6 +5,7 @@ const path = require("path");
 const http = require("http");
 const https = require("https");
 const { spawn } = require("child_process");
+const os = require("os");
 
 let child = null;
 let stopping = false;
@@ -250,7 +251,7 @@ async function restartGo2rtc() {
 
 async function installBinary() {
   const targetPath = String(adapter.config.binaryPath || "").trim();
-  const downloadUrl = String(adapter.config.downloadUrl || "").trim();
+  const downloadUrl = resolveDownloadUrl(String(adapter.config.downloadUrl || "").trim());
 
   if (!targetPath || !downloadUrl) {
     throw new Error("binaryPath and downloadUrl must be configured for install");
@@ -263,6 +264,23 @@ async function installBinary() {
   const msg = `go2rtc binary installed at ${targetPath}`;
   adapter.log.info(msg);
   await setStatus("stopped", Boolean(child), msg);
+}
+
+function resolveDownloadUrl(configuredUrl) {
+  const trimmed = configuredUrl.trim();
+  const defaultX64 = "https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_amd64";
+  if (trimmed && trimmed !== defaultX64) {
+    return trimmed;
+  }
+
+  const arch = os.arch();
+  if (arch === "arm64") {
+    return "https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_arm64";
+  }
+  if (arch === "arm") {
+    return "https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_arm";
+  }
+  return defaultX64;
 }
 
 function downloadFile(url, targetPath, redirects = 0) {
