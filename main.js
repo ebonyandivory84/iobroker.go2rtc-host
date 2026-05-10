@@ -38,6 +38,7 @@ async function main() {
   await ensureObjects();
   await setStatus("stopped", false, "Adapter started");
   await adapter.subscribeStatesAsync("control.*");
+  await ensureGo2rtcConfig();
 
   if (adapter.config.autoStart) {
     await startGo2rtc("autoStart");
@@ -110,6 +111,7 @@ async function startGo2rtc(reason) {
   }
 
   await fsp.mkdir(workingDir, { recursive: true });
+  await ensureGo2rtcConfig();
 
   if (!fs.existsSync(binaryPath)) {
     if (adapter.config.autoDownload) {
@@ -178,6 +180,83 @@ async function startGo2rtc(reason) {
 
   await setStatus("running", true, "go2rtc running");
   await adapter.setStateAsync("status.pid", proc.pid || 0, true);
+}
+
+async function ensureGo2rtcConfig() {
+  const configPath = String(adapter.config.configPath || "").trim();
+  if (!configPath) {
+    throw new Error("configPath must be configured");
+  }
+
+  const autoGenerate = adapter.config.autoGenerateConfig !== false;
+  if (!autoGenerate) {
+    return;
+  }
+
+  const yaml = buildGo2rtcYamlFromConfig();
+  await fsp.mkdir(path.dirname(configPath), { recursive: true });
+  await fsp.writeFile(configPath, yaml, "utf8");
+}
+
+function buildGo2rtcYamlFromConfig() {
+  const apiListen = String(adapter.config.apiListen || "").trim() || ":1984";
+  const webrtcListen = String(adapter.config.webrtcListen || "").trim() || ":8555";
+  const rawStreams = String(adapter.config.streamsJson || "").trim();
+  if (!rawStreams) {
+    throw new Error("streamsJson is empty - configure at least one stream");
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(rawStreams);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`streamsJson is invalid JSON: ${message}`);
+  }
+
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("streamsJson must be a JSON object: {\"name\": [\"rtsp://...\"]}");
+  }
+
+  const streamEntries = Object.entries(parsed);
+  if (!streamEntries.length) {
+    throw new Error("streamsJson must contain at least one stream entry");
+  }
+
+  const lines = [];
+  lines.push("api:");
+  lines.push(`  listen: \"${escapeYamlDoubleQuoted(apiListen)}\"`);
+  lines.push("");
+  lines.push("webrtc:");
+  lines.push(`  listen: \"${escapeYamlDoubleQuoted(webrtcListen)}\"`);
+  lines.push("");
+  lines.push("streams:");
+
+  for (const [name, value] of streamEntries) {
+    const streamName = String(name || "").trim();
+    if (!streamName) {
+      throw new Error("streamsJson contains an empty stream name");
+    }
+    if (!Array.isArray(value) || value.length === 0) {
+      throw new Error(`stream '${streamName}' must be a non-empty array`);
+    }
+
+    lines.push(`  ${streamName}:`);
+    for (const item of value) {
+      const url = String(item || "").trim();
+      if (!url) {
+        throw new Error(`stream '${streamName}' contains empty url`);
+      }
+      lines.push(`    - \"${escapeYamlDoubleQuoted(url)}\"`);
+    }
+  }
+
+  lines.push("");
+  return lines.join("\n");
+}
+
+function escapeYamlDoubleQuoted(value) {
+  return value.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"");
 }
 
 async function validateBinary(binaryPath) {

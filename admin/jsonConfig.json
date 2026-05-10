@@ -21,6 +21,23 @@
       "type": "text",
       "label": "Arbeitsverzeichnis"
     },
+    "autoGenerateConfig": {
+      "type": "checkbox",
+      "label": "go2rtc.yaml automatisch aus Streams erzeugen"
+    },
+    "apiListen": {
+      "type": "text",
+      "label": "API Listen (z. B. :1984)"
+    },
+    "webrtcListen": {
+      "type": "text",
+      "label": "WebRTC Listen (z. B. :8555)"
+    },
+    "streamsJson": {
+      "type": "textarea",
+      "label": "Streams (JSON)",
+      "help": "Beispiel: {\"instar9820\": [\"rtsp://user:pass@ip:554/livestream/11\"]}"
+    },
     "extraArgs": {
       "type": "text",
       "label": "Zusatzargumente (z. B. --log info)",
