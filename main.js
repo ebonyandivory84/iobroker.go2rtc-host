@@ -13,7 +13,13 @@ function startAdapter(options) {
   return new utils.Adapter({
     ...options,
     name: "go2rtc-host",
-    ready: () => main(),
+    ready: () => {
+      void main().catch(async (error) => {
+        const message = error instanceof Error ? error.message : String(error);
+        adapter.log.error(message);
+        await setStatus("error", Boolean(child), message);
+      });
+    },
     stateChange: (id, state) => onStateChange(id, state),
     unload: (callback) => {
       stopping = true;
@@ -120,12 +126,13 @@ async function startGo2rtc(reason) {
   const args = ["-config", configPath, ...parseExtraArgs(adapter.config.extraArgs)];
   adapter.log.info(`Starting go2rtc (${reason}) with: ${binaryPath} ${args.join(" ")}`);
 
-  child = spawn(binaryPath, args, {
+  const proc = spawn(binaryPath, args, {
     cwd: workingDir,
     stdio: ["ignore", "pipe", "pipe"],
   });
+  child = proc;
 
-  child.stdout.on("data", (chunk) => {
+  proc.stdout.on("data", (chunk) => {
     const line = String(chunk).trim();
     if (line) {
       adapter.log.info(`[go2rtc] ${line}`);
@@ -133,7 +140,7 @@ async function startGo2rtc(reason) {
     }
   });
 
-  child.stderr.on("data", (chunk) => {
+  proc.stderr.on("data", (chunk) => {
     const line = String(chunk).trim();
     if (line) {
       adapter.log.warn(`[go2rtc] ${line}`);
@@ -141,7 +148,7 @@ async function startGo2rtc(reason) {
     }
   });
 
-  child.once("exit", (code, signal) => {
+  proc.once("exit", (code, signal) => {
     const expected = stopping;
     child = null;
     const message = `go2rtc exited (code=${code ?? "null"}, signal=${signal || "none"})`;
@@ -162,7 +169,7 @@ async function startGo2rtc(reason) {
   });
 
   await setStatus("running", true, "go2rtc running");
-  await adapter.setStateAsync("status.pid", child.pid || 0, true);
+  await adapter.setStateAsync("status.pid", proc.pid || 0, true);
 }
 
 async function stopGo2rtc(reason) {
