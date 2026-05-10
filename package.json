@@ -1,0 +1,15 @@
+{
+  "name": "iobroker.go2rtc-host",
+  "version": "0.0.1",
+  "description": "ioBroker adapter to manage standalone go2rtc process",
+  "main": "main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "keywords": ["iobroker", "go2rtc", "webrtc", "camera"],
+  "license": "MIT",
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.2.3"
+  }
+}

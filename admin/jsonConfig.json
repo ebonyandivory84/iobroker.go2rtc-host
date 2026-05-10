@@ -1,0 +1,38 @@
+{
+  "type": "panel",
+  "items": {
+    "mainHeader": {
+      "type": "header",
+      "text": "go2rtc Host"
+    },
+    "autoStart": {
+      "type": "checkbox",
+      "label": "Go2rtc beim Adapter-Start automatisch starten"
+    },
+    "binaryPath": {
+      "type": "text",
+      "label": "Pfad zur go2rtc Binary"
+    },
+    "configPath": {
+      "type": "text",
+      "label": "Pfad zur go2rtc.yaml"
+    },
+    "workingDir": {
+      "type": "text",
+      "label": "Arbeitsverzeichnis"
+    },
+    "extraArgs": {
+      "type": "text",
+      "label": "Zusatzargumente (z. B. --log info)",
+      "help": "Wird an go2rtc angehaengt"
+    },
+    "autoDownload": {
+      "type": "checkbox",
+      "label": "Binary automatisch herunterladen, falls nicht vorhanden"
+    },
+    "downloadUrl": {
+      "type": "text",
+      "label": "Download-URL fuer go2rtc Binary"
+    }
+  }
+}

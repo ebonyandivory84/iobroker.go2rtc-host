@@ -1,0 +1,49 @@
+{
+  "common": {
+    "name": "go2rtc-host",
+    "version": "0.0.1",
+    "news": {
+      "0.0.1": {
+        "en": "Initial adapter version.",
+        "de": "Erste Adapter-Version."
+      }
+    },
+    "titleLang": {
+      "en": "go2rtc Host",
+      "de": "go2rtc Host"
+    },
+    "desc": {
+      "en": "Runs and monitors a standalone go2rtc process.",
+      "de": "Startet und ueberwacht einen stand-alone go2rtc Prozess."
+    },
+    "authors": ["Sebastian"],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "icon.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ebonyandivory84/iobroker.go2rtc-host/main/admin/icon.png",
+    "type": "infrastructure",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.0"
+      }
+    ]
+  },
+  "native": {
+    "autoStart": true,
+    "binaryPath": "/opt/iobroker/go2rtc/go2rtc",
+    "configPath": "/opt/iobroker/go2rtc/go2rtc.yaml",
+    "workingDir": "/opt/iobroker/go2rtc",
+    "extraArgs": "",
+    "autoDownload": false,
+    "downloadUrl": "https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_amd64"
+  },
+  "objects": []
+}
