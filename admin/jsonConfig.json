@@ -34,14 +34,10 @@
       "label": "WebRTC Listen (z. B. :8555)"
     },
     "streamsJson": {
-      "type": "textarea",
-      "label": "Streams (JSON)",
-      "help": "Beispiel: {\"instar9820\": [\"rtsp://user:pass@ip:554/livestream/11\"]}"
-    },
-    "extraArgs": {
       "type": "text",
-      "label": "Zusatzargumente (z. B. --log info)",
-      "help": "Wird an go2rtc angehaengt"
+      "label": "Streams (JSON)",
+      "placeholder": "{\"instar9820\":[\"rtsp://user:pass@ip:554/livestream/11\"]}",
+      "help": "Beispiel: {\"instar9820\": [\"rtsp://user:pass@ip:554/livestream/11\"]}"
     },
     "autoDownload": {
       "type": "checkbox",

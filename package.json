@@ -1,6 +1,6 @@
 {
   "name": "iobroker.go2rtc-host",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "ioBroker adapter to manage standalone go2rtc process",
   "main": "main.js",
   "type": "commonjs",

@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "go2rtc-host",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "news": {
+      "0.0.3": {
+        "en": "Fix admin field rendering for streams JSON.",
+        "de": "Darstellung des Streams-JSON Felds im Admin korrigiert."
+      },
       "0.0.2": {
         "en": "Add stream JSON config and auto-generate go2rtc.yaml.",
         "de": "Stream-JSON und automatische go2rtc.yaml-Generierung hinzugefuegt."
