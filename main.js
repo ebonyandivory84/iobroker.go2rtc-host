@@ -8,6 +8,7 @@ const { spawn } = require("child_process");
 
 let child = null;
 let stopping = false;
+let invalidBinaryDetected = false;
 
 function startAdapter(options) {
   return new utils.Adapter({
@@ -122,6 +123,8 @@ async function startGo2rtc(reason) {
   }
 
   await fsp.chmod(binaryPath, 0o755).catch(() => undefined);
+  await validateBinary(binaryPath);
+  invalidBinaryDetected = false;
 
   const args = ["-config", configPath, ...parseExtraArgs(adapter.config.extraArgs)];
   adapter.log.info(`Starting go2rtc (${reason}) with: ${binaryPath} ${args.join(" ")}`);
@@ -156,6 +159,10 @@ async function startGo2rtc(reason) {
     void setStatus(expected ? "stopped" : "error", false, message);
 
     if (!stopping && adapter.config.autoStart) {
+      if (invalidBinaryDetected) {
+        adapter.log.error("Skipping auto-restart: go2rtc binary appears invalid");
+        return;
+      }
       const restartMs = 3000;
       adapter.log.info(`Restarting go2rtc in ${restartMs}ms`);
       setTimeout(() => {
@@ -170,6 +177,30 @@ async function startGo2rtc(reason) {
 
   await setStatus("running", true, "go2rtc running");
   await adapter.setStateAsync("status.pid", proc.pid || 0, true);
+}
+
+async function validateBinary(binaryPath) {
+  await new Promise((resolve, reject) => {
+    const probe = spawn(binaryPath, ["-version"], {
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let stderr = "";
+    probe.stderr.on("data", (chunk) => {
+      stderr += String(chunk);
+    });
+
+    probe.once("error", (error) => reject(error));
+    probe.once("exit", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+      const hint = stderr.trim() || `exit code ${code}`;
+      invalidBinaryDetected = true;
+      reject(new Error(`invalid go2rtc binary at ${binaryPath}: ${hint}`));
+    });
+  });
 }
 
 async function stopGo2rtc(reason) {
