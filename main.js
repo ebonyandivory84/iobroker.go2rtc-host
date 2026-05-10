@@ -201,6 +201,7 @@ async function ensureGo2rtcConfig() {
 function buildGo2rtcYamlFromConfig() {
   const apiListen = String(adapter.config.apiListen || "").trim() || ":1984";
   const webrtcListen = String(adapter.config.webrtcListen || "").trim() || ":8555";
+  const rtspListen = String(adapter.config.rtspListen || "").trim() || ":8554";
   const rawStreams = String(adapter.config.streamsJson || "").trim();
   if (!rawStreams) {
     throw new Error("streamsJson is empty - configure at least one stream");
@@ -229,6 +230,9 @@ function buildGo2rtcYamlFromConfig() {
   lines.push("");
   lines.push("webrtc:");
   lines.push(`  listen: \"${escapeYamlDoubleQuoted(webrtcListen)}\"`);
+  lines.push("");
+  lines.push("rtsp:");
+  lines.push(`  listen: \"${escapeYamlDoubleQuoted(rtspListen)}\"`);
   lines.push("");
   lines.push("streams:");
 

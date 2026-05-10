@@ -33,6 +33,10 @@
       "type": "text",
       "label": "WebRTC Listen (z. B. :8555)"
     },
+    "rtspListen": {
+      "type": "text",
+      "label": "RTSP Listen (z. B. :8554 oder 'off')"
+    },
     "streamsJson": {
       "type": "text",
       "label": "Streams (JSON)",

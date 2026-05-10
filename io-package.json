@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "go2rtc-host",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "news": {
+      "0.0.4": {
+        "en": "Add configurable RTSP listen address.",
+        "de": "Konfigurierbare RTSP-Listen-Adresse hinzugefuegt."
+      },
       "0.0.3": {
         "en": "Fix admin field rendering for streams JSON.",
         "de": "Darstellung des Streams-JSON Felds im Admin korrigiert."
@@ -53,6 +57,7 @@
     "autoGenerateConfig": true,
     "apiListen": ":1984",
     "webrtcListen": ":8555",
+    "rtspListen": ":8554",
     "streamsJson": "{\n  \"instar9820\": [\n    \"rtsp://user:password@192.168.1.50:554/livestream/11\"\n  ]\n}",
     "autoDownload": false,
     "downloadUrl": "https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_amd64"
